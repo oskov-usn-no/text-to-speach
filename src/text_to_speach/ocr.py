@@ -19,13 +19,16 @@ def _configure_tesseract() -> None:
         pytesseract.pytesseract.tesseract_cmd = str(WINDOWS_TESSERACT)
 
 
-def collect_images(paths: list[Path]) -> list[Path]:
-    images: list[Path] = []
+def collect_images(paths: list[Path]) -> list[tuple[Path, Path]]:
+    """Return (root, image) pairs; folders are searched recursively."""
+    images: list[tuple[Path, Path]] = []
     for path in paths:
         if path.is_dir():
-            images.extend(sorted(p for p in path.iterdir() if p.suffix.lower() in IMAGE_SUFFIXES))
+            images.extend(
+                (path, p) for p in sorted(path.rglob("*")) if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES
+            )
         else:
-            images.append(path)
+            images.append((path.parent, path))
     return images
 
 

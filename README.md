@@ -24,16 +24,18 @@ Speech → Add voices → Polish. Use `--voice` to pick another, e.g. `--voice J
 
 ```powershell
 uv sync
-uv run tts ocr "$env:USERPROFILE\Pictures\Screenshots"   # -> output\*.txt
-uv run tts ocr --clipboard                                # after Win+Shift+S
-uv run tts speak output\screenshot1.txt
+uv run tts ocr D:\screenshots                             # .txt next to every image, all subfolders
+uv run tts ocr D:\screenshots --skip-existing             # only images without a .txt yet
+uv run tts ocr D:\screenshots --out D:\text               # mirror folder structure under D:\text
+uv run tts ocr --clipboard                                # after Win+Shift+S -> output\
+uv run tts speak D:\screenshots\shot1.txt
 uv run tts run --clipboard                               # OCR + read aloud (Polish)
 uv run tts run --clipboard --lang nor --voice Jon        # Norwegian
-uv run tts run shot.png --save                            # writes output\shot.wav
+uv run tts run shot.png --save                            # writes shot.txt + shot.wav
 uv run tts voices
 ```
 
-Options: `--lang` (default `pol`, combine with `+`, e.g. `pol+eng`), `--out` (default `output`), `--voice` (default `Polish`), `--rate`.
+Options: `--lang` (default `pol`, combine with `+`, e.g. `pol+eng`), `--out` (default: next to each image), `--skip-existing`, `--voice` (default `Polish`), `--rate`.
 
 ## Tests
 

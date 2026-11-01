@@ -5,15 +5,25 @@ from pathlib import Path
 from text_to_speach import ocr, tts
 
 
+def _text_target(root: Path, image: Path, out: Path | None) -> Path:
+    if out is None:
+        return image.with_suffix(".txt")
+    return out / image.relative_to(root).with_suffix(".txt")
+
+
 def _ocr_to_files(args: argparse.Namespace) -> list[Path]:
-    args.out.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     if args.clipboard:
-        target = args.out / f"clipboard-{datetime.now():%Y%m%d-%H%M%S}.txt"
+        folder = args.out or Path("output")
+        folder.mkdir(parents=True, exist_ok=True)
+        target = folder / f"clipboard-{datetime.now():%Y%m%d-%H%M%S}.txt"
         target.write_text(ocr.clipboard_to_text(args.lang), encoding="utf-8")
         written.append(target)
-    for image in ocr.collect_images(args.images):
-        target = args.out / f"{image.stem}.txt"
+    for root, image in ocr.collect_images(args.images):
+        target = _text_target(root, image, args.out)
+        if args.skip_existing and target.exists():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(ocr.file_to_text(image, args.lang), encoding="utf-8")
         written.append(target)
     for path in written:
@@ -51,10 +61,16 @@ def cmd_voices(_: argparse.Namespace) -> None:
 
 
 def _add_ocr_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("images", nargs="*", type=Path, help="Image files or folders")
+    parser.add_argument("images", nargs="*", type=Path, help="Image files or folders (searched recursively)")
     parser.add_argument("--clipboard", action="store_true", help="OCR the image on the clipboard")
     parser.add_argument("--lang", default="pol", help="Tesseract languages, e.g. pol, nor, pol+eng (default: pol)")
-    parser.add_argument("--out", type=Path, default=Path("output"), help="Folder for .txt files")
+    parser.add_argument(
+        "--out",
+        type=Path,
+        help="Write .txt files here, mirroring the folder structure (default: next to each image; "
+        "clipboard text goes to 'output')",
+    )
+    parser.add_argument("--skip-existing", action="store_true", help="Skip images that already have a .txt")
 
 
 def _add_tts_args(parser: argparse.ArgumentParser) -> None:
