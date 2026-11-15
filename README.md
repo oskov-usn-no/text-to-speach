@@ -139,6 +139,22 @@ Press **Ctrl + C** in the Command Prompt window.
 
 ---
 
+## Updating the program
+
+1. On the project's GitHub page, click **Code** → **Download ZIP** again.
+2. Unzip it into the same folder as before (e.g. `C:\text-to-speach`) and choose to **replace** the files.
+   Your screenshots and text files are not affected.
+3. In Command Prompt, run:
+
+```
+cd C:\text-to-speach
+uv sync
+```
+
+If you got the program with `git clone`, run `git pull` and then `uv sync` instead.
+
+---
+
 ## Options
 
 | Option | What it does |
