@@ -31,6 +31,17 @@ def _ocr_to_files(args: argparse.Namespace) -> list[Path]:
     return written
 
 
+def _collect_texts(paths: list[Path]) -> list[Path]:
+    """Return .txt files; folders are searched recursively."""
+    files: list[Path] = []
+    for path in paths:
+        if path.is_dir():
+            files.extend(p for p in sorted(path.rglob("*")) if p.is_file() and p.suffix.lower() == ".txt")
+        else:
+            files.append(path)
+    return files
+
+
 def _speak_files(files: list[Path], args: argparse.Namespace) -> None:
     for path in files:
         text = path.read_text(encoding="utf-8")
@@ -40,6 +51,7 @@ def _speak_files(files: list[Path], args: argparse.Namespace) -> None:
             tts.save(text, path.with_suffix(".wav"), args.voice, args.rate)
             print(path.with_suffix(".wav"))
         else:
+            print(path)
             tts.speak(text, args.voice, args.rate)
 
 
@@ -48,7 +60,7 @@ def cmd_ocr(args: argparse.Namespace) -> None:
 
 
 def cmd_speak(args: argparse.Namespace) -> None:
-    _speak_files(args.files, args)
+    _speak_files(_collect_texts(args.files), args)
 
 
 def cmd_run(args: argparse.Namespace) -> None:
@@ -88,7 +100,7 @@ def main(argv: list[str] | None = None) -> None:
     p_ocr.set_defaults(func=cmd_ocr)
 
     p_speak = sub.add_parser("speak", help="Read .txt files aloud")
-    p_speak.add_argument("files", nargs="+", type=Path)
+    p_speak.add_argument("files", nargs="+", type=Path, help="Text files or folders (searched recursively)")
     _add_tts_args(p_speak)
     p_speak.set_defaults(func=cmd_speak)
 

@@ -103,6 +103,12 @@ uv run tts ocr "C:\My screenshots" --skip-existing
 uv run tts speak "C:\My screenshots\Screenshot 1.txt"
 ```
 
+Or read every text file in a folder, **including all subfolders**, one after another:
+
+```
+uv run tts speak "C:\My screenshots"
+```
+
 ### Do both at once (get the text and read it aloud)
 
 ```
