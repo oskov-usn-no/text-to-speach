@@ -91,6 +91,14 @@ uv run tts ocr "C:\My screenshots"
 Every screenshot in the folder, **including all subfolders**, gets a `.txt` file with the same name
 right next to it, e.g. `Screenshot 1.png` → `Screenshot 1.txt`.
 
+PDF files in the folder are included too: the screenshots (pictures) inside each PDF are read, page by
+page, into one `.txt` file next to it, e.g. `Notes.pdf` → `Notes.txt`. Ordinary typed text in the PDF
+is not included, only text in pictures. You can also give a single PDF:
+
+```
+uv run tts ocr "C:\My screenshots\Notes.pdf"
+```
+
 Added more screenshots later? Only do the new ones:
 
 ```

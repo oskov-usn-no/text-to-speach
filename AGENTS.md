@@ -6,6 +6,7 @@ the agent container is Linux and can only run unit tests.
 ## Layout
 - `src/text_to_speach/cli.py` — argparse CLI: `ocr`, `speak`, `run` (ocr + speak), `voices`.
 - `src/text_to_speach/ocr.py` — Tesseract via `pytesseract`; files, folders (recursive), or clipboard (`PIL.ImageGrab`).
+  PDFs: embedded images are extracted with `pypdf` and OCR'd in page order into one `.txt`; the PDF's own text layer is ignored.
   Output `.txt`/`.wav` lands next to each image unless `--out` is given (then the folder structure is mirrored).
 - `src/text_to_speach/tts.py` — `pyttsx3` (SAPI5 on Windows): speak or save `.wav`.
 - `tests/` — pytest; only tests that don't need Tesseract or a TTS engine.
